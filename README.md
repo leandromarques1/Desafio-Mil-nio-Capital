@@ -1,4 +1,4 @@
-# Desafio-Milenio-Capital
+# Desafio Milenio Capital
 
 Resultado do Trabalho do Candidato Anderson Leandro de M. M. Rocha
 
