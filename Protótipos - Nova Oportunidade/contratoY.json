@@ -1,0 +1,14 @@
+{
+    "contract": "Y",
+	"emission_price": 1000000,
+    "start_date": "2015-10-30",
+    "index": "PRE",
+    "spread": 0.144760,
+    "schedules": [
+                    {"due_date": "2018-10-28", "amount": 0.5}, 
+                    {"due_date": "2019-10-28", "amount": 0.5}, 
+                    {"due_date": "2020-10-28", "amount": 0.5}, 
+                    {"due_date": "2021-10-28", "amount": 0.5}, 
+                    {"due_date": "2021-10-30", "amount": 0.5}
+                 ]
+}
