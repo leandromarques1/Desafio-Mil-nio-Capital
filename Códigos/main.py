@@ -100,59 +100,35 @@ def PU_Oper(j_neg, dataDigitada, contract):
 	'''Calculando o PU Operação'''
 	# Parte 1: levar à valor futuro os pagamentos
 	j_emissao = contract["spread"]
-	
-	datasAmortizações = []
 	numParcelas = len(contract["schedules"])
-	for i in range(0,num_schedules,1):
-		datasAmortizações.append(contract["schedules"][i]["due_date"])
-
-	#print(datasAmortizações)
-
+	
 	parcelas_ValorFuturo = []
-	for i in range(0,num_schedules,1):
-		#print("\nParcela",i+1,"a Valor futuro:")
+	for i in range(0,numParcelas,1):
 		valorAmortizacao = (contract["schedules"][i]["amount"])*(contract["emission_price"])
-		#print("\tValor Amortizacao:",valorAmortizacao)
-		#print("\tData digitada:", dataDigitada)
-		#print("\tData a trabalhar:",contract["schedules"][i]["due_date"])
 		
 		valorAtualizado = VNA(contract["schedules"][i]["due_date"], contract)
-		#print("\tValor Atualizado:",valorAtualizado)
 		
 		dataUltimoEvento = date_Last_DueDate(contract["schedules"][i]["due_date"], contract)
 		d_uteis = diasUteis(dataUltimoEvento, contract["schedules"][i]["due_date"])
 		
-		#print("\tDias uteis:",d_uteis)
-		#print("\tPU Par: ",PU_Par(valorAtualizado, j_emissao, d_uteis))
-		
 		juros_a_Pagar = PU_Par(valorAtualizado, j_emissao, d_uteis) - valorAtualizado
-		#print("\tJuros a Pagar: ", juros_a_Pagar)
 		valorFuturo = valorAmortizacao + juros_a_Pagar
 		parcelas_ValorFuturo.append(valorFuturo)
 
-	#print("\nParcelas a Valor Futuro: ", parcelas_ValorFuturo)
 
 
 	# Parte 2: trazer o fluxo futuro à valor presente 
-	#		   para a data que estamos calculando (01/01/2022) 
+	#		   para a data que estamos calculando  
 	#		   com a taxa informada
 	
 	parcelas_ValorPresente = []
 	for i in range (0,numParcelas,1):	
-		#print("\nParcela",i+1,":",parcelas_ValorFuturo[i])
-		#print("\tData digitada:",dataDigitada)
 		dataUltimoEvento = date_Last_DueDate(contract["schedules"][i]["due_date"], contract)
-		#print("\tdataUltimoEvento:", dataUltimoEvento)
 		d_uteis = diasUteis(dataDigitada, contract["schedules"][i]["due_date"])
 		if (d_uteis>0):
-			#print("\tDias Uteis:",d_uteis)
-			#print("\tJuros Negociação:",j_neg)
 			valorPresente = (parcelas_ValorFuturo[i])/((1+(j_neg/100))**(d_uteis/252))
-			#print("\tValor Presente:",valorPresente)
 			parcelas_ValorPresente.append(valorPresente)
 
-	#print("\nParcelas a Valor Presente: ", parcelas_ValorPresente)
-	#print("PU Operacao:", sum(parcelas_ValorPresente))
 	return sum(parcelas_ValorPresente)
 
 def taxa_OPER(puOPER, dataDigitada, contract):
@@ -162,36 +138,20 @@ def taxa_OPER(puOPER, dataDigitada, contract):
 	maximo = 100
 	j_neg = (minimo+maximo)/2
 
-
 	i=0
 	while (puOPER != PU_Oper(j_neg, dataDigitada, contract) and i<=100):
 		i = i+1
-		#print("\nIteração Nº ",i)
 		if (puOPER > PU_Oper(j_neg, dataDigitada, contract)):
 			maximo = j_neg
 			j_neg = (minimo+maximo)/2
-			#print("\tMin:", minimo)
-			#print("\tMax:", maximo)
-			#print("\tTaxa de Operacao:", j_neg)
-			#print("\tTaxa de Operacao:", format(j_neg,'.3f'))
-			#print("\tPu Operacao passado: ", puOPER)
-			#print("\tPU Operacao para a taxa de operacao no momento: ", PU_Oper(j_neg, dataDigitada, contract))
 		
 		elif (puOPER < PU_Oper(j_neg, dataDigitada, contract)):
 			minimo = j_neg
-			#maximo = 
 			j_neg = (minimo+maximo)/2
-			#print("\tMin:", minimo)
-			#print("\tMax:", maximo)
-			#print("\tTaxa de Operacao:", j_neg)
-			#print("\tTaxa de Operacao:", format(j_neg,'.3f'))
-			#print("\tPu Operacao passado: ", puOPER)
-			#print("\tPU Operacao para a taxa de operacao no momento: ", PU_Oper(j_neg, dataDigitada, contract))
-		
+
 		elif (puOPER == PU_Oper(j_neg, dataDigitada, contract)):
 			return format(j_neg,'.5f')
 		
-	#print("Taxa de juros da operacao: ", format(j_neg,'.5f'),"%")
 	return format(j_neg,'.5f')
 	
 def dataVencimentoDefinitivo(contract):
