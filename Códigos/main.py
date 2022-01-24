@@ -8,6 +8,7 @@ from datetime import timedelta
 
 
 def importar_contract(contractPath):
+	'''Importar Arquivo do tipo JSON p/ leitura no código'''
 	with open(contractPath, encoding='utf-8') as myJSON:
 		dados = json.load(myJSON)
 	return dados
@@ -47,6 +48,7 @@ def date_Last_DueDate(dataDigitada, contract):
 	return last_due_date
 
 def diasUteis(data_inicio, data_fim):
+	'''Calcular quantidade de dias úteis entre duas datas'''
 	date1 = converter_toDatetime(data_inicio)
 	date2 = converter_toDatetime(data_fim)
 
@@ -154,9 +156,8 @@ def PU_Oper(j_neg, dataDigitada, contract):
 	return sum(parcelas_ValorPresente)
 
 def taxa_OPER(puOPER, dataDigitada, contract):
-	''' Usando o método da BUSCA BINÁRIA 
-		para encontrar a resposta
-	'''
+	'''Encontrar Taxa usada p/ um detereminado PU Operação''' 
+	'''Método da BUSCA BINÁRIA '''
 	minimo = 0
 	maximo = 100
 	j_neg = (minimo+maximo)/2
@@ -194,10 +195,12 @@ def taxa_OPER(puOPER, dataDigitada, contract):
 	return format(j_neg,'.5f')
 	
 def dataVencimentoDefinitivo(contract):
+	'''Encontrar data do Vencimento do Contrato'''
 	numSchedules = len(contract["schedules"])
 	return contract["schedules"][numSchedules-1]["due_date"]
 
 def plotarGrafico(j_neg,contract):
+	'''Plotar a evolução dos preços de PU PAR em um intervalo de datas definido pelo usuário'''
 	dataComeco = input("Digitar data de Começo da análise: ")
 	
 	dataFim = input("Digitar data de Fim da análise: ")
